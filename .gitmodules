@@ -1,3 +1,8 @@
+[submodule "seastar"]
+	path = seastar
+	url = https://github.com/muzarski/seastar_quic.git
+	branch = fixing_tests
+	ignore = dirty
 [submodule "swagger-ui"]
 	path = swagger-ui
 	url = https://github.com/scylladb/scylla-swagger-ui.git
