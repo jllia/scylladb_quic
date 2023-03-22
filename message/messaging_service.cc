@@ -21,7 +21,7 @@
 #include "query-request.hh"
 #include "query-result.hh"
 #include <seastar/rpc/rpc.hh>
-#include "mutation/canonical_mutation.hh"
+#include "canonical_mutation.hh"
 #include "schema_mutations.hh"
 #include "db/config.hh"
 #include "db/view/view_update_backlog.hh"
@@ -29,13 +29,13 @@
 #include "range.hh"
 #include "frozen_schema.hh"
 #include "repair/repair.hh"
-#include "utils/digest_algorithm.hh"
+#include "digest_algorithm.hh"
 #include "service/paxos/proposal.hh"
 #include "service/paxos/prepare_response.hh"
 #include "query-request.hh"
 #include "mutation_query.hh"
 #include "repair/repair.hh"
-#include "utils/digest_algorithm.hh"
+#include "digest_algorithm.hh"
 #include "streaming/stream_reason.hh"
 #include "streaming/stream_mutation_fragments_cmd.hh"
 #include "cache_temperature.hh"
@@ -107,7 +107,7 @@
 #include "partition_range_compat.hh"
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/adaptor/indirected.hpp>
-#include "mutation/frozen_mutation.hh"
+#include "frozen_mutation.hh"
 #include "streaming/stream_manager.hh"
 #include "streaming/stream_mutation_fragments_cmd.hh"
 #include "idl/partition_checksum.dist.impl.hh"
@@ -173,6 +173,12 @@ messaging_service::shard_info::shard_info(shared_ptr<rpc_protocol_client_wrapper
     , topology_ignored(topo_ignored)
 {
 }
+
+
+//insert your path to keys
+std::string cert_file = "/home/julias/mim/zpp/seastar-master/quiche/quiche/examples/cert.crt";
+std::string key_file = "/home/julias/mim/zpp/seastar-master/quiche/quiche/examples/cert.key";
+
 
 rpc::stats messaging_service::shard_info::get_stats() const {
     return rpc_client->get_stats();
@@ -338,7 +344,7 @@ void messaging_service::do_start_listen() {
                 lo.lba =  server_socket::load_balancing_algorithm::port;
                 auto addr = socket_address{a, _cfg.ssl_port};
                 return std::make_unique<rpc_protocol_server_wrapper>(_rpc->protocol(),
-                        so, seastar::tls::listen(_credentials, addr, lo), limits);
+                        so, seastar::net::quic_listen(addr, cert_file, key_file), limits);
             }());
         };
         _server_tls[0] = listen(_cfg.ip, rpc::streaming_domain_type(0x77CC));
